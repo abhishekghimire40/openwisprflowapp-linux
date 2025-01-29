@@ -427,12 +427,15 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  'OpenWisprFlow',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white70,
+                Expanded(
+                  child: Text(
+                    'OpenWisprFlow',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white70,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -444,59 +447,64 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 Center(
                   child: Consumer<VoiceRecognitionState>(
                     builder: (context, state, child) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(
-                              'assets/app_icon.png',
-                              width: 96,
-                              height: 96,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'Your voice everywhere',
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          if (!state.hasApiKey)
-                            TextButton(
-                              onPressed: _showApiKeyDialog,
-                              child: const Text('Set up Groq API Key'),
-                            ),
-                          if (state.hasApiKey)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24),
-                              child: Text(
-                                state.lastWords.isEmpty
-                                    ? 'Press Alt+X to start speaking'
-                                    : state.lastWords,
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                  height: 1.5,
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: Image.asset(
+                                  'assets/app_icon.png',
+                                  width: 96,
+                                  height: 96,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
-                          const SizedBox(height: 30),
-                          if (state.hasApiKey)
-                            FloatingActionButton(
-                              onPressed: () => state.toggleListening(),
-                              backgroundColor: Colors.white12,
-                              child: Icon(
-                                state.isListening ? Icons.mic : Icons.mic_none,
-                                color: Colors.white,
+                              const SizedBox(height: 24),
+                              Text(
+                                'Your voice everywhere',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
-                            ),
-                        ],
+                              const SizedBox(height: 20),
+                              if (!state.hasApiKey)
+                                TextButton(
+                                  onPressed: _showApiKeyDialog,
+                                  child: const Text('Set up Groq API Key'),
+                                ),
+                              if (state.hasApiKey)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  child: Text(
+                                    state.lastWords.isEmpty
+                                        ? 'Press Alt+X to start speaking'
+                                        : state.lastWords,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 14,
+                                      color: Colors.white70,
+                                      height: 1.5,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              const SizedBox(height: 30),
+                              if (state.hasApiKey)
+                                FloatingActionButton(
+                                  onPressed: () => state.toggleListening(),
+                                  backgroundColor: Colors.white12,
+                                  child: Icon(
+                                    state.isListening ? Icons.mic : Icons.mic_none,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -517,22 +525,54 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   right: 0,
                   bottom: 16,
                   child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        'Press Alt+X anywhere to start',
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 12,
-                          color: Colors.white30,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'Press Alt+X anywhere to start',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 12,
+                              color: Colors.white30,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Made by ',
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 11,
+                                color: Colors.white30,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => launchUrl(
+                                Uri.parse('https://x.com/jithingarapati'),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                              child: Text(
+                                'Jithin Garapati',
+                                style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11,
+                                  color: Colors.white30,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
