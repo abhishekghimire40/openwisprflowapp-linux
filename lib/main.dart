@@ -22,6 +22,7 @@ void main() async {
   
   // Initialize hotkey
   await hotKeyManager.unregisterAll();
+  print('Hotkeys unregistered');
   
   await windowManager.ensureInitialized();
 
@@ -83,23 +84,32 @@ class VoiceRecognitionState extends ChangeNotifier {
     await _initSystemTray();
 
     // Register global hotkey (Alt + X)
-    await hotKeyManager.register(
-      HotKey(
-        KeyCode.keyX,
-        modifiers: [KeyModifier.alt],
-        scope: HotKeyScope.system,
-      ),
-      keyDownHandler: (_) async {
-        if (!hasApiKey) {
-          await windowManager.show();
-          await windowManager.focus();
-          return;
-        }
-        // Hide window when starting to listen
-        await windowManager.hide();
-        await toggleListening();
-      },
-    );
+    try {
+      print('Attempting to register Alt + X hotkey...');
+      await hotKeyManager.register(
+        HotKey(
+          KeyCode.keyX,
+          modifiers: [KeyModifier.alt],
+          scope: HotKeyScope.system,
+        ),
+        keyDownHandler: (_) async {
+          print('Alt + X hotkey pressed!');
+          if (!hasApiKey) {
+            print('No API key found, showing window');
+            await windowManager.show();
+            await windowManager.focus();
+            return;
+          }
+          print('Starting listening process');
+          // Hide window when starting to listen
+          await windowManager.hide();
+          await toggleListening();
+        },
+      );
+      print('Alt + X hotkey registered successfully');
+    } catch (e) {
+      print('Error registering hotkey: $e');
+    }
 
     _isInitialized = true;
   }
