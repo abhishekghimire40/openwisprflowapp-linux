@@ -3,7 +3,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:record/record.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -56,7 +56,7 @@ void main() async {
 }
 
 class VoiceRecognitionState extends ChangeNotifier {
-  final _audioRecorder = AudioRecorder();
+  final _methodChannel = const MethodChannel('audio_recorder');
   bool _isListening = false;
   String _lastWords = '';
   String _currentRecordingPath = '';
@@ -74,10 +74,7 @@ class VoiceRecognitionState extends ChangeNotifier {
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    final hasPermission = await _audioRecorder.hasPermission();
-    if (!hasPermission) {
-      throw Exception('Microphone permission not granted');
-    }
+    // Nothing to initialize for native recorder
 
     // Try to load settings
     await _loadSettings();
@@ -250,15 +247,9 @@ class VoiceRecognitionState extends ChangeNotifier {
       final tempDir = await getTemporaryDirectory();
       _currentRecordingPath = '${tempDir.path}/temp_audio.wav';
       
-      await _audioRecorder.start(
-        const RecordConfig(
-          encoder: AudioEncoder.wav,
-          sampleRate: 16000,
-          numChannels: 1,
-          bitRate: 16 * 1000,
-        ),
-        path: _currentRecordingPath,
-      );
+      await _methodChannel.invokeMethod('startRecording', {
+        'path': _currentRecordingPath,
+      });
 
       _isListening = true;
       notifyListeners();
@@ -272,7 +263,7 @@ class VoiceRecognitionState extends ChangeNotifier {
 
   Future<void> _stopListening() async {
     try {
-      await _audioRecorder.stop();
+      await _methodChannel.invokeMethod('stopRecording');
       _isListening = false;
       notifyListeners();
 
